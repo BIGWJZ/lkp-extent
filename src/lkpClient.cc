@@ -191,7 +191,6 @@ private:
     //向服务器发送数据
     void Send(const google::protobuf::Message& messageToSend)
     {
-        printf("111");
         // mutex用来保护connection_这个shared_ptr
         MutexLockGuard lock(mutex_);
         if (connection_->connected())

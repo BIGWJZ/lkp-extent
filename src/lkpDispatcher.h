@@ -14,10 +14,10 @@ typedef std::shared_ptr<google::protobuf::Message> MessagePtr;
 
 class Callback : muduo::noncopyable
 {
- public:
+public:
   virtual ~Callback() = default;
-  virtual void onMessage(const muduo::net::TcpConnectionPtr&,
-                         const MessagePtr& message,
+  virtual void onMessage(const muduo::net::TcpConnectionPtr &,
+                         const MessagePtr &message,
                          muduo::Timestamp) const = 0;
 };
 
@@ -26,18 +26,20 @@ class CallbackT : public Callback
 {
   static_assert(std::is_base_of<google::protobuf::Message, T>::value,
                 "T must be derived from gpb::Message.");
- public:
-  typedef std::function<void (const muduo::net::TcpConnectionPtr&,
-                                const std::shared_ptr<T>& message,
-                                muduo::Timestamp)> ProtobufMessageTCallback;
 
-  CallbackT(const ProtobufMessageTCallback& callback)
-    : callback_(callback)
+public:
+  typedef std::function<void(const muduo::net::TcpConnectionPtr &,
+                             const std::shared_ptr<T> &message,
+                             muduo::Timestamp)>
+      ProtobufMessageTCallback;
+
+  CallbackT(const ProtobufMessageTCallback &callback)
+      : callback_(callback)
   {
   }
 
-  void onMessage(const muduo::net::TcpConnectionPtr& conn,
-                 const MessagePtr& message,
+  void onMessage(const muduo::net::TcpConnectionPtr &conn,
+                 const MessagePtr &message,
                  muduo::Timestamp receiveTime) const override
   {
     std::shared_ptr<T> concrete = muduo::down_pointer_cast<T>(message);
@@ -45,24 +47,25 @@ class CallbackT : public Callback
     callback_(conn, concrete, receiveTime);
   }
 
- private:
+private:
   ProtobufMessageTCallback callback_;
 };
 
 class lkpDispatcher
 {
- public:
-  typedef std::function<void (const muduo::net::TcpConnectionPtr&,
-                                const MessagePtr& message,
-                                muduo::Timestamp)> ProtobufMessageCallback;
+public:
+  typedef std::function<void(const muduo::net::TcpConnectionPtr &,
+                             const MessagePtr &message,
+                             muduo::Timestamp)>
+      ProtobufMessageCallback;
 
-  explicit lkpDispatcher(const ProtobufMessageCallback& defaultCb)
-    : defaultCallback_(defaultCb)
+  explicit lkpDispatcher(const ProtobufMessageCallback &defaultCb)
+      : defaultCallback_(defaultCb)
   {
   }
 
-  void onProtobufMessage(const muduo::net::TcpConnectionPtr& conn,
-                         const MessagePtr& message,
+  void onProtobufMessage(const muduo::net::TcpConnectionPtr &conn,
+                         const MessagePtr &message,
                          muduo::Timestamp receiveTime) const
   {
     printf("Dispatcher 被触发\n");
@@ -77,18 +80,17 @@ class lkpDispatcher
     }
   }
 
-  template<typename T>
-  void registerMessageCallback(const typename CallbackT<T>::ProtobufMessageTCallback& callback)
+  template <typename T>
+  void registerMessageCallback(const typename CallbackT<T>::ProtobufMessageTCallback &callback)
   {
-    std::shared_ptr<CallbackT<T> > pd(new CallbackT<T>(callback));
+    std::shared_ptr<CallbackT<T>> pd(new CallbackT<T>(callback));
     callbacks_[T::descriptor()] = pd;
   }
 
- private:
-  typedef std::map<const google::protobuf::Descriptor*, std::shared_ptr<Callback> > CallbackMap;
+private:
+  typedef std::map<const google::protobuf::Descriptor *, std::shared_ptr<Callback>> CallbackMap;
 
   CallbackMap callbacks_;
   ProtobufMessageCallback defaultCallback_;
 };
-#endif  // LKP_DISPATCHER_H
-
+#endif // LKP_DISPATCHER_H

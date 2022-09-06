@@ -140,7 +140,7 @@ void lkpCodec::onMessage(const TcpConnectionPtr& conn,
     else if (buf->readableBytes() >= implicit_cast<size_t>(len + kHeaderLen))
     {
       ErrorCode errorCode = kNoError;
-      MessagePtr message = parse(buf->peek()+kHeaderLen, len, &errorCode);
+      MessagePtr message = parse(buf->peek()+kHeaderLen, len, &errorCode);//根据字节流中的typeName，创建对应的MessagePtr
       if (errorCode == kNoError && message)
       {
         messageCallback_(conn, message, receiveTime);
@@ -186,6 +186,7 @@ MessagePtr lkpCodec::parse(const char* buf, int len, ErrorCode* error)
       ::adler32(1,
                 reinterpret_cast<const Bytef*>(buf),
                 static_cast<int>(len - kHeaderLen)));
+  //校验和通过才会继续
   if (checkSum == expectedCheckSum)
   {
     // get message type name
@@ -194,7 +195,7 @@ MessagePtr lkpCodec::parse(const char* buf, int len, ErrorCode* error)
     {
       std::string typeName(buf + kHeaderLen, buf + kHeaderLen + nameLen - 1);
       // create message object
-      message.reset(createMessage(typeName));
+      message.reset(createMessage(typeName));//根据typeName创建MessagePtr
       if (message)
       {
         // parse from buffer

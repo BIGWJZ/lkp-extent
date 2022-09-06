@@ -58,6 +58,9 @@ typedef std::shared_ptr<lkpMessage::File> RecvFilePtr;
 typedef std::shared_ptr<lkpMessage::Command> RecvCommandPtr;
 typedef std::shared_ptr<lkpMessage::HeartBeat> HeartBeatPtr;
 
+class IPCConnection;
+typedef std::shared_ptr<IPCConnection> IPCConnectionPtr;
+
 class lkpServer : noncopyable
 {
 public:
@@ -197,3 +200,7 @@ extern int CMDsfd;
 extern int CMDcfd;
 
 int buildIPC();
+
+extern const char *TCPSERVER = "CMD_SUN";
+extern const char *CMDIPC = "CMDIPC";
+extern const int LEN = 4096;
