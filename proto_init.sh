@@ -2,7 +2,7 @@
 
 set -ex
 
-ROOT_DIR = $(pwd)
+ROOT_DIR=$(pwd)
 tar -xzvf ./etc/protobuf-cpp-3.0.0.tar.gz -C ./etc
 cd ./etc/protobuf-3.0.0
 cp -r ./src/google /usr/include
