@@ -8,3 +8,4 @@ log/*
 results/remote/
 results/local/
 etc/dockerimages
+etc/protobuf-3.0.0
