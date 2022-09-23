@@ -9,11 +9,6 @@ if [ ! -d /usr/local/protobuf/lib ] || [ ! -d /usr/local/protobuf/bin ];then
     exit 0
 fi
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/protobuf/lib
-export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/protobuf/lib
-export PATH=$PATH:/usr/local/protobuf/bin
-ldconfig
-protoc --version
 
 git submodule init
 git submodule update
